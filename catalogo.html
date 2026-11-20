@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo Completo — LAGUNNA BOUTIQUE</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23B2B8A6' stroke='%23FAF3EC' stroke-width='3.5'/%3E%3Cpath d='M12 62 Q24 54 36 62 T60 62 T88 62' fill='none' stroke='%23FAF3EC' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M16 74 Q28 66 40 74 T64 74 T84 74' fill='none' stroke='%23FAF3EC' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/catalog.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="brand" aria-label="Lagunna Boutique">
+        <svg class="brand__icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="46" fill="#B2B8A6" stroke="#FAF3EC" stroke-width="3.5"/>
+          <path d="M12 62 Q24 54 36 62 T60 62 T88 62" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+          <path d="M16 74 Q28 66 40 74 T64 74 T84 74" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+          <path d="M25 85 Q36 78 48 85 T75 85" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div class="brand__text">
+          <span class="brand__name">LAGUNNA</span>
+          <span class="brand__sub">BOUTIQUE</span>
+        </div>
+      </a>
+
+      <nav id="mainNav" class="nav" aria-label="Navegação Principal">
+        <a href="index.html" class="nav__link">Início</a>
+        <a href="catalogo.html" class="nav__link is-active">Catálogo Completo</a>
+        <a href="index.html#localizacao" class="nav__link">Onde Estamos</a>
+      </nav>
+
+      <div class="header__actions">
+        <button id="openCartBtn" type="button" class="cart-btn" aria-label="Abrir sacola">
+          <span>Sacola</span>
+          <span id="cartCount" class="cart-btn__badge">0</span>
+        </button>
+        <button id="mobileMenuBtn" type="button" class="icon-btn mobile-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__eyebrow">Estoque Atualizado</span>
+        <h1 class="section__title">CATÁLOGO COMPLETO</h1>
+        <p class="section__desc">Escolha categoria, estilo ou disponibilidade para montar sua reserva.</p>
+
+        <div class="quick-tabs" role="tablist" aria-label="Atalhos de categoria">
+          <button type="button" class="quick-tab is-active" data-cat-target="todos">Todas</button>
+          <button type="button" class="quick-tab" data-cat-target="vestidos">Vestidos</button>
+          <button type="button" class="quick-tab" data-cat-target="conjuntos">Conjuntos</button>
+          <button type="button" class="quick-tab" data-cat-target="alfaiataria">Alfaiataria</button>
+          <button type="button" class="quick-tab" data-cat-target="acessorios">Acessórios</button>
+        </div>
+      </div>
+
+      <div class="catalog-controls">
+        <div class="filter-group">
+          <label for="searchCatalog">Buscar</label>
+          <input type="search" id="searchCatalog" class="select-input" placeholder="Nome ou tecido..." />
+        </div>
+
+        <div class="filter-group">
+          <label for="filterCategory">Tipo de Peça</label>
+          <select id="filterCategory" class="select-input">
+            <option value="todos">Todos os tipos</option>
+            <option value="vestidos">Vestidos</option>
+            <option value="conjuntos">Conjuntos</option>
+            <option value="alfaiataria">Alfaiataria</option>
+            <option value="acessorios">Acessórios</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filterStyle">Estilo</label>
+          <select id="filterStyle" class="select-input">
+            <option value="todos">Todos os estilos</option>
+            <option value="Casual Chic">Casual Chic</option>
+            <option value="Resort & Praia">Resort & Praia</option>
+            <option value="Elegante & Noite">Elegante & Noite</option>
+            <option value="Minimalista">Minimalista</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="sortCatalog">Ordenar</label>
+          <select id="sortCatalog" class="select-input">
+            <option value="padrao">Destaques</option>
+            <option value="menor">Menor preço</option>
+            <option value="maior">Maior preço</option>
+          </select>
+        </div>
+
+        <div class="filter-group filter-group--checkbox">
+          <label class="checkbox-label">
+            <input type="checkbox" id="onlyInStock" />
+            <span>Apenas disponíveis</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="catalog-meta-bar">
+        <div id="catalogStats" class="catalog-stats"></div>
+        <button type="button" id="resetFiltersBtn" class="reset-link">Limpar filtros</button>
+      </div>
+
+      <div id="catalogGrid" class="product-grid"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <span class="footer__title">LAGUNNA</span>
+        <span class="footer__subtitle">BOUTIQUE</span>
+      </div>
+      <p class="footer__address">Av. Doutor João Silva Filho, 3016, Sala 01 • Bairro Piauí • WhatsApp (86) 99449-9556</p>
+      <p class="footer__copy">© 2026 Lagunna Boutique. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <div id="cartOverlay" class="overlay" hidden></div>
+  <aside id="cartDrawer" class="drawer" aria-hidden="true" aria-label="Sacola de compras">
+    <div class="drawer__header">
+      <h3>SUA SACOLA</h3>
+      <button id="closeCartBtn" type="button" class="icon-btn" aria-label="Fechar sacola">✕</button>
+    </div>
+    <div id="cartItems" class="drawer__body"></div>
+    <div class="drawer__footer">
+      <div class="drawer__customer">
+        <input type="text" id="customerName" class="drawer__input" placeholder="Seu nome completo *" required />
+        <input type="tel" id="customerPhone" class="drawer__input" placeholder="Seu WhatsApp (opcional)" />
+
+        <select id="deliveryMode" class="drawer__input">
+          <option value="Retirada na loja">Retirar na loja física (Av. Dr. João Silva Filho, 3016)</option>
+          <option value="Entrega">Entrega em domicílio</option>
+        </select>
+
+        <div id="deliveryAddressGroup" class="drawer__address-group" hidden>
+          <input type="text" id="addrStreet" class="drawer__input" placeholder="Rua / Avenida e Número *" />
+          <div class="drawer__row">
+            <input type="text" id="addrNeighborhood" class="drawer__input" placeholder="Bairro *" />
+            <input type="text" id="addrComplement" class="drawer__input" placeholder="Apto / Ponto de ref." />
+          </div>
+        </div>
+
+        <select id="paymentMethod" class="drawer__input">
+          <option value="Pix">Pagamento: Pix</option>
+          <option value="Cartão de Crédito (Link ou Maquininha)">Pagamento: Cartão de Crédito</option>
+          <option value="Cartão de Débito">Pagamento: Cartão de Débito</option>
+          <option value="Dinheiro">Pagamento: Dinheiro</option>
+        </select>
+
+        <input type="text" id="orderNotes" class="drawer__input" placeholder="Observações (ex.: troco, horário, presente)" />
+      </div>
+
+      <div class="drawer__total">
+        <span>Subtotal</span>
+        <strong id="cartTotal">R$ 0,00</strong>
+      </div>
+      <button id="checkoutBtn" type="button" class="btn btn--primary btn--full" disabled>Reservar Pedido via WhatsApp</button>
+    </div>
+  </aside>
+
+  <div id="quickViewModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal__box">
+      <button id="closeModalBtn" type="button" class="icon-btn modal__close" aria-label="Fechar detalhes">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/script.js"></script>
+</body>
+</html>

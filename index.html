@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LAGUNNA BOUTIQUE — Vitrine & Loja Física</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23B2B8A6' stroke='%23FAF3EC' stroke-width='3.5'/%3E%3Cpath d='M12 62 Q24 54 36 62 T60 62 T88 62' fill='none' stroke='%23FAF3EC' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M16 74 Q28 66 40 74 T64 74 T84 74' fill='none' stroke='%23FAF3EC' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="brand" aria-label="Lagunna Boutique">
+        <svg class="brand__icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="46" fill="#B2B8A6" stroke="#FAF3EC" stroke-width="3.5"/>
+          <path d="M12 62 Q24 54 36 62 T60 62 T88 62" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+          <path d="M16 74 Q28 66 40 74 T64 74 T84 74" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+          <path d="M25 85 Q36 78 48 85 T75 85" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div class="brand__text">
+          <span class="brand__name">LAGUNNA</span>
+          <span class="brand__sub">BOUTIQUE</span>
+        </div>
+      </a>
+
+      <nav id="mainNav" class="nav" aria-label="Navegação Principal">
+        <a href="index.html" class="nav__link is-active">Início</a>
+        <a href="catalogo.html" class="nav__link">Catálogo Completo</a>
+        <a href="#localizacao" class="nav__link">Onde Estamos</a>
+      </nav>
+
+      <div class="header__actions">
+        <button id="openCartBtn" type="button" class="cart-btn" aria-label="Abrir sacola">
+          <span>Sacola</span>
+          <span id="cartCount" class="cart-btn__badge">0</span>
+        </button>
+        <button id="mobileMenuBtn" type="button" class="icon-btn mobile-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero__content">
+      <svg class="hero__emblem" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Emblema Lagunna Boutique">
+        <circle cx="50" cy="50" r="46" fill="#B2B8A6" stroke="#FAF3EC" stroke-width="3.5"/>
+        <path d="M12 62 Q24 54 36 62 T60 62 T88 62" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+        <path d="M16 74 Q28 66 40 74 T64 74 T84 74" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+        <path d="M25 85 Q36 78 48 85 T75 85" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+
+      <h1 class="hero__title">LAGUNNA</h1>
+      <span class="hero__subtitle-tag">BOUTIQUE</span>
+      <p class="hero__desc">Curadoria em moda feminina com pronta-entrega e estoque atualizado em tempo real.</p>
+
+      <div class="hero__cta-group">
+        <a href="catalogo.html" class="btn btn--primary">Ver Catálogo Completo</a>
+        <a href="#vitrine" class="btn btn--outline">Destaques da Vitrine</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="vitrine" class="section">
+    <div class="container">
+      <div class="section__header">
+        <span class="section__eyebrow">Pronta-Entrega</span>
+        <h2 class="section__title">VITRINE DA SEMANA</h2>
+        <p class="section__desc">Seleção em destaque. Acesse o catálogo completo para filtrar por tipos e estilos.</p>
+      </div>
+
+      <div id="showcaseGrid" class="product-grid"></div>
+
+      <div class="section__footer-cta">
+        <a href="catalogo.html" class="btn btn--primary">Explorar Catálogo Completo →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="localizacao" class="section section--sage">
+    <div class="container location">
+      <div class="location__info">
+        <span class="section__eyebrow">Loja Física</span>
+        <h2 class="section__title">ONDE ESTAMOS LOCALIZADAS</h2>
+        <p class="location__address">
+          <strong>Av. Doutor João Silva Filho, 3016, Sala 01</strong><br />
+          Bairro Piauí — Próximo ao cruzamento com a R. Lucídio Portela
+        </p>
+
+        <div class="location__actions">
+          <a href="https://maps.google.com/?q=Av.+Doutor+Joao+Silva+Filho+3016+Bairro+Piaui" target="_blank" rel="noopener noreferrer" class="btn btn--outline">
+            Abrir no Google Maps
+          </a>
+          <a href="https://wa.me/5586994499556?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Lagunna%20Boutique%20e%20gostaria%20de%20conferir%20as%20pe%C3%A7as%20em%20estoque." target="_blank" rel="noopener noreferrer" class="btn btn--primary">
+            WhatsApp: (86) 99449-9556
+          </a>
+        </div>
+      </div>
+
+      <div class="location__card">
+        <div class="location__badge">ATENDIMENTO PRESENCIAL & RESERVAS</div>
+        <h3>Visite a Lagunna Boutique</h3>
+        <p>Experimente nossas peças na loja física ou reserve pela sacola com confirmação via WhatsApp.</p>
+        <ul class="location__hours">
+          <li><strong>Segunda a Sexta:</strong> 09h às 18h</li>
+          <li><strong>Sábado:</strong> 09h às 13h</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <span class="footer__title">LAGUNNA</span>
+        <span class="footer__subtitle">BOUTIQUE</span>
+      </div>
+      <p class="footer__address">Av. Doutor João Silva Filho, 3016, Sala 01 • Bairro Piauí • WhatsApp (86) 99449-9556</p>
+      <p class="footer__copy">© 2026 Lagunna Boutique. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <div id="cartOverlay" class="overlay" hidden></div>
+  <aside id="cartDrawer" class="drawer" aria-hidden="true" aria-label="Sacola de compras">
+    <div class="drawer__header">
+      <h3>SUA SACOLA</h3>
+      <button id="closeCartBtn" type="button" class="icon-btn" aria-label="Fechar sacola">✕</button>
+    </div>
+    <div id="cartItems" class="drawer__body"></div>
+    <div class="drawer__footer">
+      <div class="drawer__customer">
+        <input type="text" id="customerName" class="drawer__input" placeholder="Seu nome completo *" required />
+        <input type="tel" id="customerPhone" class="drawer__input" placeholder="Seu WhatsApp (opcional)" />
+
+        <select id="deliveryMode" class="drawer__input">
+          <option value="Retirada na loja">Retirar na loja física (Av. Dr. João Silva Filho, 3016)</option>
+          <option value="Entrega">Entrega em domicílio</option>
+        </select>
+
+        <div id="deliveryAddressGroup" class="drawer__address-group" hidden>
+          <input type="text" id="addrStreet" class="drawer__input" placeholder="Rua / Avenida e Número *" />
+          <div class="drawer__row">
+            <input type="text" id="addrNeighborhood" class="drawer__input" placeholder="Bairro *" />
+            <input type="text" id="addrComplement" class="drawer__input" placeholder="Apto / Ponto de ref." />
+          </div>
+        </div>
+
+        <select id="paymentMethod" class="drawer__input">
+          <option value="Pix">Pagamento: Pix</option>
+          <option value="Cartão de Crédito (Link ou Maquininha)">Pagamento: Cartão de Crédito</option>
+          <option value="Cartão de Débito">Pagamento: Cartão de Débito</option>
+          <option value="Dinheiro">Pagamento: Dinheiro</option>
+        </select>
+
+        <input type="text" id="orderNotes" class="drawer__input" placeholder="Observações (ex.: troco, horário, presente)" />
+      </div>
+
+      <div class="drawer__total">
+        <span>Subtotal</span>
+        <strong id="cartTotal">R$ 0,00</strong>
+      </div>
+      <button id="checkoutBtn" type="button" class="btn btn--primary btn--full" disabled>Reservar Pedido via WhatsApp</button>
+    </div>
+  </aside>
+
+  <div id="quickViewModal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal__box">
+      <button id="closeModalBtn" type="button" class="icon-btn modal__close" aria-label="Fechar detalhes">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Gestão — LAGUNNA BOUTIQUE</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23B2B8A6' stroke='%23FAF3EC' stroke-width='3.5'/%3E%3Cpath d='M12 62 Q24 54 36 62 T60 62 T88 62' fill='none' stroke='%23FAF3EC' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M16 74 Q28 66 40 74 T64 74 T84 74' fill='none' stroke='%23FAF3EC' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="brand" aria-label="Voltar para a loja">
+        <svg class="brand__icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="46" fill="#B2B8A6" stroke="#FAF3EC" stroke-width="3.5"/>
+          <path d="M12 62 Q24 54 36 62 T60 62 T88 62" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+          <path d="M16 74 Q28 66 40 74 T64 74 T84 74" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+          <path d="M25 85 Q36 78 48 85 T75 85" stroke="#FAF3EC" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div class="brand__text">
+          <span class="brand__name">LAGUNNA</span>
+          <span class="brand__sub">GESTÃO INTERNA</span>
+        </div>
+      </a>
+
+      <div id="adminUserBar" class="admin-user-bar" hidden>
+        <span id="adminEmailLabel" class="admin-email"></span>
+        <button id="logoutBtn" type="button" class="btn btn--outline btn--sm">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container admin-main">
+    <section id="loginSection" class="login-card">
+      <span class="section__eyebrow">Acesso Restrito</span>
+      <h1 class="login-card__title">ÁREA DO GESTOR</h1>
+      <p class="login-card__desc">Entre com as credenciais administrativas.</p>
+
+      <form id="loginForm" class="admin-form">
+        <div class="form-field">
+          <label for="adminEmail">E-mail</label>
+          <input type="email" id="adminEmail" class="select-input" required autocomplete="username" />
+        </div>
+        <div class="form-field">
+          <label for="adminPassword">Senha</label>
+          <input type="password" id="adminPassword" class="select-input" required autocomplete="current-password" />
+        </div>
+        <p id="loginError" class="error-msg" hidden></p>
+        <button type="submit" id="loginSubmitBtn" class="btn btn--primary btn--full">Entrar no Painel</button>
+      </form>
+    </section>
+
+    <section id="dashboardSection" class="dashboard" hidden>
+      <div class="kpi-bar">
+        <div class="kpi-card">
+          <span class="kpi-card__label">Modelos Cadastrados</span>
+          <strong id="kpiModels" class="kpi-card__value">0</strong>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-card__label">Peças Totais em Estoque</span>
+          <strong id="kpiTotalUnits" class="kpi-card__value">0</strong>
+        </div>
+        <div class="kpi-card kpi-card--warn">
+          <span class="kpi-card__label">Estoque Baixo (≤ 2)</span>
+          <strong id="kpiLowStock" class="kpi-card__value">0</strong>
+        </div>
+        <div class="kpi-card kpi-card--danger">
+          <span class="kpi-card__label">Esgotados (0)</span>
+          <strong id="kpiOutStock" class="kpi-card__value">0</strong>
+        </div>
+      </div>
+
+      <div class="admin-tabs">
+        <button type="button" class="admin-tab is-active" data-panel="estoquePanel">1. Estoque por Grade</button>
+        <button type="button" class="admin-tab" data-panel="cadastroPanel">Cadastrar / Editar Peça</button>
+        <button type="button" class="admin-tab" data-panel="reservasPanel">Reservas (<span id="pendingCount">0</span>)</button>
+        <button type="button" class="admin-tab" data-panel="historicoPanel">Histórico de Movimentações</button>
+      </div>
+
+      <div id="estoquePanel" class="admin-panel">
+        <div class="admin-box">
+          <div class="admin-box__header">
+            <h2 class="admin-box__title">Saldo por Grade de Tamanhos</h2>
+            <span id="filteredCountLabel" class="catalog-stats">Exibindo 0 peças</span>
+          </div>
+
+          <div class="stock-toolbar">
+            <div class="form-field">
+              <label for="adminSearch">Buscar Peça</label>
+              <input type="search" id="adminSearch" class="select-input" placeholder="Nome, tecido ou ID..." />
+            </div>
+
+            <div class="form-field">
+              <label for="adminFilterCat">Categoria</label>
+              <select id="adminFilterCat" class="select-input">
+                <option value="todos">Todas</option>
+                <option value="vestidos">vestidos</option>
+                <option value="conjuntos">conjuntos</option>
+                <option value="alfaiataria">alfaiataria</option>
+                <option value="acessorios">acessorios</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="adminFilterStatus">Situação do Estoque</label>
+              <select id="adminFilterStatus" class="select-input">
+                <option value="todos">Todos os saldos</option>
+                <option value="baixo">Estoque baixo (1 a 2)</option>
+                <option value="esgotado">Esgotados (0)</option>
+                <option value="disponivel">Em estoque (&gt; 0)</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="adminStockList" class="admin-list"></div>
+        </div>
+      </div>
+
+      <div id="cadastroPanel" class="admin-panel" hidden>
+        <div class="admin-grid">
+          <div class="admin-box">
+            <h2 id="formTitle" class="admin-box__title">Cadastrar Nova Peça</h2>
+            <form id="productForm" class="admin-form">
+              <input type="hidden" id="prodId" />
+
+              <div class="form-field">
+                <label for="prodNome">Nome da Peça</label>
+                <input type="text" id="prodNome" class="select-input" required placeholder="Ex: Vestido Midi Lagunna" />
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="prodCategoria">Categoria</label>
+                  <select id="prodCategoria" class="select-input" required>
+                    <option value="vestidos">vestidos</option>
+                    <option value="conjuntos">conjuntos</option>
+                    <option value="alfaiataria">alfaiataria</option>
+                    <option value="acessorios">acessorios</option>
+                  </select>
+                </div>
+
+                <div class="form-field">
+                  <label for="prodEstilo">Estilo</label>
+                  <select id="prodEstilo" class="select-input" required>
+                    <option value="Casual Chic">Casual Chic</option>
+                    <option value="Resort & Praia">Resort & Praia</option>
+                    <option value="Elegante & Noite">Elegante & Noite</option>
+                    <option value="Minimalista">Minimalista</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="prodMaterial">Material / Cor</label>
+                  <input type="text" id="prodMaterial" class="select-input" required placeholder="Ex: Linho Misto • Verde Sálvia" />
+                </div>
+
+                <div class="form-field">
+                  <label for="prodPreco">Preço (R$)</label>
+                  <input type="number" id="prodPreco" class="select-input" step="0.01" min="0" required placeholder="389.90" />
+                </div>
+              </div>
+
+              <div class="form-field" id="initialSizesBox">
+                <label>Grade Inicial (deixe 0 nos tamanhos que não possui)</label>
+                <div class="grade-inputs">
+                  <div><span>PP</span><input type="number" id="initPP" min="0" value="0" /></div>
+                  <div><span>P</span><input type="number" id="initP" min="0" value="0" /></div>
+                  <div><span>M</span><input type="number" id="initM" min="0" value="0" /></div>
+                  <div><span>G</span><input type="number" id="initG" min="0" value="0" /></div>
+                  <div><span>GG</span><input type="number" id="initGG" min="0" value="0" /></div>
+                  <div><span>Único</span><input type="number" id="initUnico" min="0" value="0" /></div>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="prodImagemUrl">URL da Foto (Opcional — para uso futuro)</label>
+                <input type="url" id="prodImagemUrl" class="select-input" placeholder="https://..." />
+              </div>
+
+              <div class="form-field">
+                <label for="prodDescricao">Descrição</label>
+                <textarea id="prodDescricao" class="select-input" rows="3" required placeholder="Detalhes do caimento e acabamento..."></textarea>
+              </div>
+
+              <label class="checkbox-label">
+                <input type="checkbox" id="prodDestaque" />
+                <span>Exibir na Vitrine da Semana (Página Inicial)</span>
+              </label>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn--primary" id="saveProdBtn">Cadastrar Peça</button>
+                <button type="button" class="btn btn--outline" id="cancelEditBtn" hidden>Cancelar Edição</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="admin-box">
+            <div class="admin-box__header">
+              <h2 class="admin-box__title">Peças no Catálogo</h2>
+              <span class="catalog-stats">Edite ficha ou exclua item</span>
+            </div>
+            <div id="adminCatalogList" class="admin-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="reservasPanel" class="admin-panel" hidden>
+        <div class="admin-box">
+          <div class="admin-box__header">
+            <h2 class="admin-box__title">Pedidos Reservados pelo Site</h2>
+            <span class="catalog-stats">Confirmar abate da grade; cancelar após confirmado estorna</span>
+          </div>
+          <div id="adminOrdersList" class="admin-list"></div>
+        </div>
+      </div>
+
+      <div id="historicoPanel" class="admin-panel" hidden>
+        <div class="admin-box">
+          <div class="admin-box__header">
+            <h2 class="admin-box__title">Últimas Movimentações de Estoque</h2>
+            <span class="catalog-stats">Auditoria automática de entradas, saídas e estornos</span>
+          </div>
+          <div id="adminHistoryList" class="admin-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

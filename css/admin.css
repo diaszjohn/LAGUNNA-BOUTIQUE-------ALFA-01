@@ -1,0 +1,363 @@
+.admin-main {
+  padding: 40px 24px 80px;
+}
+
+.admin-user-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-email {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.btn--sm {
+  padding: 8px 14px;
+  font-size: 0.72rem;
+}
+
+.login-card {
+  max-width: 420px;
+  margin: 40px auto;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  padding: 36px 32px;
+}
+
+.login-card__title {
+  font-size: 1.4rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  margin-bottom: 8px;
+}
+
+.login-card__desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.kpi-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.kpi-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kpi-card__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.kpi-card__value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--dark-olive);
+}
+
+.kpi-card--warn .kpi-card__value {
+  color: var(--stock-low);
+}
+
+.kpi-card--danger .kpi-card__value {
+  color: var(--stock-out);
+}
+
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 14px;
+}
+
+.admin-tab {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--dark-olive);
+  padding: 10px 20px;
+  font-family: var(--font-main);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.admin-tab.is-active {
+  background: var(--dark-olive);
+  border-color: var(--dark-olive);
+  color: var(--bg-cream);
+}
+
+.stock-toolbar {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.select-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-cream);
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  color: var(--dark-olive);
+  outline: none;
+}
+
+.select-input:focus {
+  border-color: var(--dark-olive);
+}
+
+.grade-inputs {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.grade-inputs div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--bg-cream);
+  border: 1px solid var(--border-subtle);
+  padding: 6px;
+}
+
+.grade-inputs span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.grade-inputs input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--dark-olive);
+  outline: none;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.84rem;
+}
+
+.error-msg {
+  color: var(--stock-out);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.admin-box {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  padding: 26px;
+}
+
+.admin-box__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.admin-box__title {
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.admin-box__header .admin-box__title {
+  margin-bottom: 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-item {
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-cream);
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-item--out {
+  border-left: 4px solid var(--stock-out);
+}
+
+.admin-item--low {
+  border-left: 4px solid var(--stock-low);
+}
+
+.admin-item__title {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.admin-item__meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.admin-item__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.size-grid-editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.size-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  padding: 4px 8px;
+}
+
+.size-box__label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  min-width: 22px;
+}
+
+.size-box input {
+  width: 48px;
+  padding: 4px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-cream);
+  text-align: center;
+  font-family: var(--font-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--dark-olive);
+}
+
+.log-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  text-transform: uppercase;
+  background-color: var(--sage-main);
+  color: var(--dark-olive);
+}
+
+.btn--danger {
+  border-color: var(--stock-out);
+  color: var(--stock-out);
+}
+
+.btn--danger:hover {
+  background-color: var(--stock-out);
+  color: #FFFFFF;
+}
+
+@media (max-width: 900px) {
+  .kpi-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stock-toolbar,
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .grade-inputs {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .kpi-bar,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
