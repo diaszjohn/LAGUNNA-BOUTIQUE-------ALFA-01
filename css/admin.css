@@ -189,6 +189,25 @@
   outline: none;
 }
 
+.photo-upload-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.photo-preview {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border: 1px solid var(--border-subtle);
+  margin-top: 8px;
+}
+
+.photo-preview[hidden] {
+  display: none;
+}
+
 .checkbox-label {
   display: inline-flex;
   align-items: center;

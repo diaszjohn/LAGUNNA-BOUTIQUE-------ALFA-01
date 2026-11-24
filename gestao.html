@@ -40,7 +40,7 @@
     <section id="loginSection" class="login-card">
       <span class="section__eyebrow">Acesso Restrito</span>
       <h1 class="login-card__title">ÁREA DO GESTOR</h1>
-      <p class="login-card__desc">Entre com as credenciais administrativas.</p>
+      <p class="login-card__desc">Entre com as credenciais administrativas cadastradas no Firebase.</p>
 
       <form id="loginForm" class="admin-form">
         <div class="form-field">
@@ -77,7 +77,7 @@
       </div>
 
       <div class="admin-tabs">
-        <button type="button" class="admin-tab is-active" data-panel="estoquePanel">1. Estoque por Grade</button>
+        <button type="button" class="admin-tab is-active" data-panel="estoquePanel">Estoque por Grade</button>
         <button type="button" class="admin-tab" data-panel="cadastroPanel">Cadastrar / Editar Peça</button>
         <button type="button" class="admin-tab" data-panel="reservasPanel">Reservas (<span id="pendingCount">0</span>)</button>
         <button type="button" class="admin-tab" data-panel="historicoPanel">Histórico de Movimentações</button>
@@ -181,8 +181,14 @@
               </div>
 
               <div class="form-field">
-                <label for="prodImagemUrl">URL da Foto (Opcional — para uso futuro)</label>
-                <input type="url" id="prodImagemUrl" class="select-input" placeholder="https://..." />
+                <label for="prodFotoFile">Foto da Peça (Galeria ou Câmera)</label>
+                <div class="photo-upload-box">
+                  <label for="prodFotoFile" class="btn btn--outline btn--sm">📷 Inserir Foto</label>
+                  <input type="file" id="prodFotoFile" accept="image/*" hidden />
+                  <span id="photoFileName" class="admin-item__meta">Nenhuma foto selecionada</span>
+                </div>
+                <img id="photoPreview" alt="Pré-visualização" class="photo-preview" hidden />
+                <input type="hidden" id="prodImagemUrl" />
               </div>
 
               <div class="form-field">

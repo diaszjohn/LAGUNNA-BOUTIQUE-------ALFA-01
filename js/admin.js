@@ -19,6 +19,9 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
+const CLOUDINARY_CLOUD_NAME = "bhm10caz";
+const CLOUDINARY_UPLOAD_PRESET = "lagunna_fotos";
+
 const loginSection = document.getElementById("loginSection");
 const dashboardSection = document.getElementById("dashboardSection");
 const adminUserBar = document.getElementById("adminUserBar");
@@ -32,6 +35,10 @@ const saveProdBtn = document.getElementById("saveProdBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
 const initialSizesBox = document.getElementById("initialSizesBox");
 
+const prodFotoFile = document.getElementById("prodFotoFile");
+const photoFileName = document.getElementById("photoFileName");
+const photoPreview = document.getElementById("photoPreview");
+
 const adminStockList = document.getElementById("adminStockList");
 const adminCatalogList = document.getElementById("adminCatalogList");
 const adminOrdersList = document.getElementById("adminOrdersList");
@@ -43,7 +50,18 @@ let unsubProducts = null;
 let unsubOrders = null;
 let unsubHistory = null;
 let currentProducts = [];
+let currentOrders = [];
 let isBusy = false;
+
+const STOCK_DEDUCTED_STATUSES = ["confirmado", "saiu_entrega", "concluido"];
+
+const STATUS_LABELS = {
+  pendente: "Pendente",
+  confirmado: "Confirmado (Separado)",
+  saiu_entrega: "Saiu para Entrega",
+  concluido: "Concluído / Entregue",
+  cancelado: "Cancelado"
+};
 
 function formatBRL(value) {
   return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -59,6 +77,34 @@ function formatDateBR(ts) {
   });
 }
 
+function normalizePhoneBR(rawPhone) {
+  const digits = String(rawPhone || "").replace(/\D/g, "");
+  if (!digits || digits.length < 10) return null;
+  return digits.startsWith("55") ? digits : `55${digits}`;
+}
+
+function buildDeliveryWhatsAppUrl(order) {
+  const phone = normalizePhoneBR(order.cliente?.telefone);
+  if (!phone) return null;
+
+  const nome = order.cliente?.nome || "cliente";
+  const itens = (order.itens || [])
+    .map((i) => `• ${i.qty}x ${i.name} [${i.size || "Único"}]`)
+    .join("\n");
+  const endereco = order.cliente?.endereco?.texto || "endereço informado";
+  const pagamento = order.cliente?.pagamento || "combinado";
+
+  const msg =
+    `Olá, *${nome}*! Aqui é da *Lagunna Boutique*.\n\n` +
+    `Seu pedido *#${order.id.slice(0, 6)}* acabou de *sair para entrega*! 🛵✨\n\n` +
+    `*Itens:*\n${itens}\n\n` +
+    `*Endereço:* ${endereco}\n` +
+    `*Pagamento:* ${pagamento} (${formatBRL(order.total)})\n\n` +
+    `Qualquer dúvida estamos à disposição!`;
+
+  return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+}
+
 function showNotice(msg) {
   console.warn("[Gestão Lagunna]:", msg);
   window.alert(msg);
@@ -71,6 +117,34 @@ function switchTab(panelId) {
   document.querySelectorAll(".admin-panel").forEach((p) => {
     p.hidden = p.id !== panelId;
   });
+}
+
+prodFotoFile?.addEventListener("change", () => {
+  const file = prodFotoFile.files?.[0];
+  if (!file) return;
+  if (photoFileName) photoFileName.textContent = file.name;
+  if (photoPreview) {
+    photoPreview.src = URL.createObjectURL(file);
+    photoPreview.hidden = false;
+  }
+});
+
+async function uploadPhotoToCloudinary(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    { method: "POST", body: formData }
+  );
+
+  if (!response.ok) {
+    throw new Error("Falha ao enviar a imagem para o Cloudinary.");
+  }
+
+  const data = await response.json();
+  return data.secure_url;
 }
 
 async function logStockMovement({ produtoNome, tamanho, delta, saldoFinal, motivo }) {
@@ -176,9 +250,9 @@ function startListeners() {
   unsubOrders = onSnapshot(
     qOrders,
     (snapshot) => {
-      const orders = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-      pendingCount.textContent = orders.filter((o) => o.status === "pendente").length;
-      renderOrders(orders);
+      currentOrders = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+      pendingCount.textContent = currentOrders.filter((o) => o.status === "pendente").length;
+      renderOrders(currentOrders);
     },
     (err) => {
       console.error("Erro no listener de reservas:", err);
@@ -405,18 +479,26 @@ productForm.addEventListener("submit", async (e) => {
   isBusy = true;
   if (saveProdBtn) saveProdBtn.disabled = true;
 
-  const basePayload = {
-    nome: document.getElementById("prodNome").value.trim(),
-    categoria: document.getElementById("prodCategoria").value,
-    estilo: document.getElementById("prodEstilo").value,
-    material: document.getElementById("prodMaterial").value.trim(),
-    preco: priceNum,
-    imagemUrl: document.getElementById("prodImagemUrl").value.trim(),
-    descricao: document.getElementById("prodDescricao").value.trim(),
-    destaque: document.getElementById("prodDestaque").checked
-  };
-
   try {
+    let finalImageUrl = document.getElementById("prodImagemUrl").value.trim();
+    const selectedFile = prodFotoFile?.files?.[0];
+
+    if (selectedFile) {
+      saveProdBtn.textContent = "Enviando foto...";
+      finalImageUrl = await uploadPhotoToCloudinary(selectedFile);
+    }
+
+    const basePayload = {
+      nome: document.getElementById("prodNome").value.trim(),
+      categoria: document.getElementById("prodCategoria").value,
+      estilo: document.getElementById("prodEstilo").value,
+      material: document.getElementById("prodMaterial").value.trim(),
+      preco: priceNum,
+      imagemUrl: finalImageUrl,
+      descricao: document.getElementById("prodDescricao").value.trim(),
+      destaque: document.getElementById("prodDestaque").checked
+    };
+
     if (id) {
       await updateDoc(doc(db, "produtos", id), basePayload);
     } else {
@@ -445,10 +527,13 @@ productForm.addEventListener("submit", async (e) => {
     resetProductForm();
   } catch (err) {
     console.error("Erro ao salvar peça:", err);
-    showNotice("Não foi possível salvar a peça.");
+    showNotice(err.message || "Não foi possível salvar a peça.");
   } finally {
     isBusy = false;
-    if (saveProdBtn) saveProdBtn.disabled = false;
+    if (saveProdBtn) {
+      saveProdBtn.disabled = false;
+      saveProdBtn.textContent = document.getElementById("prodId").value ? "Salvar Alterações" : "Cadastrar Peça";
+    }
   }
 });
 
@@ -459,6 +544,13 @@ function resetProductForm() {
     if (el) el.value = "0";
   });
   document.getElementById("prodId").value = "";
+  document.getElementById("prodImagemUrl").value = "";
+  if (prodFotoFile) prodFotoFile.value = "";
+  if (photoFileName) photoFileName.textContent = "Nenhuma foto selecionada";
+  if (photoPreview) {
+    photoPreview.src = "";
+    photoPreview.hidden = true;
+  }
   formTitle.textContent = "Cadastrar Nova Peça";
   saveProdBtn.textContent = "Cadastrar Peça";
   initialSizesBox.hidden = false;
@@ -482,6 +574,13 @@ adminCatalogList.addEventListener("click", async (e) => {
     document.getElementById("prodImagemUrl").value = prod.imagemUrl || "";
     document.getElementById("prodDescricao").value = prod.descricao || "";
     document.getElementById("prodDestaque").checked = Boolean(prod.destaque);
+
+    if (prodFotoFile) prodFotoFile.value = "";
+    if (photoFileName) photoFileName.textContent = prod.imagemUrl ? "Foto atual mantida" : "Nenhuma foto selecionada";
+    if (photoPreview) {
+      photoPreview.src = prod.imagemUrl || "";
+      photoPreview.hidden = !prod.imagemUrl;
+    }
 
     formTitle.textContent = `Editando Ficha: ${prod.nome}`;
     saveProdBtn.textContent = "Salvar Alterações";
@@ -512,6 +611,7 @@ adminCatalogList.addEventListener("click", async (e) => {
   }
 });
 
+/* ABA 3: RESERVAS */
 function renderOrders(orders) {
   if (!adminOrdersList) return;
 
@@ -531,21 +631,34 @@ function renderOrders(orders) {
       const enderecoTexto = order.cliente?.endereco?.texto || "";
       const pagamento = order.cliente?.pagamento || "Não informado";
       const obs = order.cliente?.observacoes || "";
+      const status = order.status || "pendente";
+      const isDelivery = modalidade.toLowerCase().includes("entrega");
+      const waUrl = buildDeliveryWhatsAppUrl(order);
 
-      let actionButtons = "";
-      if (order.status === "pendente") {
-        actionButtons = `
-          <button type="button" class="btn btn--primary btn--sm" data-confirm-order="${order.id}">Confirmar & Baixar</button>
-          <button type="button" class="btn btn--outline btn--danger btn--sm" data-cancel-order="${order.id}">Cancelar</button>
-        `;
-      } else if (order.status === "confirmado") {
-        actionButtons = `
-          <button type="button" class="btn btn--outline btn--danger btn--sm" data-cancel-order="${order.id}">Cancelar & Estornar Estoque</button>
-        `;
-      }
+      const statusSelect = `
+        <select class="select-input" style="width:auto; padding:6px 10px; font-size:0.78rem;" data-status-select="${order.id}" aria-label="Alterar situação">
+          <option value="pendente" ${status === "pendente" ? "selected" : ""}>Pendente</option>
+          <option value="confirmado" ${status === "confirmado" ? "selected" : ""}>Confirmado (Baixar)</option>
+          ${isDelivery ? `<option value="saiu_entrega" ${status === "saiu_entrega" ? "selected" : ""}>Saiu p/ Entrega</option>` : ""}
+          <option value="concluido" ${status === "concluido" ? "selected" : ""}>Concluído</option>
+          <option value="cancelado" ${status === "cancelado" ? "selected" : ""}>Cancelado</option>
+        </select>
+      `;
+
+      const notifyBtn =
+        isDelivery && waUrl && status !== "cancelado"
+          ? `<a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn btn--outline btn--sm" data-notify-delivery="${order.id}">🛵 Avisar Saída (WhatsApp)</a>`
+          : "";
+
+      const cancelBtn =
+        status !== "cancelado"
+          ? `<button type="button" class="btn btn--outline btn--danger btn--sm" data-cancel-order="${order.id}">Cancelar</button>`
+          : "";
+
+      const deleteBtn = `<button type="button" class="btn btn--outline btn--danger btn--sm" data-delete-order="${order.id}" title="Apagar registro">Excluir</button>`;
 
       return `
-        <div class="admin-item">
+        <div class="admin-item ${status === "cancelado" ? "admin-item--out" : ""}">
           <div>
             <div class="admin-item__title">Reserva #${order.id.slice(0, 6)} — ${clienteNome} (${formatBRL(order.total)})</div>
             <div class="admin-item__meta">${itemsText}</div>
@@ -553,43 +666,48 @@ function renderOrders(orders) {
               <strong>${modalidade}</strong>${enderecoTexto ? `: ${enderecoTexto}` : ""} • Pgto: <strong>${pagamento}</strong>
             </div>
             ${obs ? `<div class="admin-item__meta">Obs.: ${obs}</div>` : ""}
-            <div class="admin-item__meta">${clienteFone ? `Tel: ${clienteFone} • ` : ""}${formatDateBR(order.criadoEm)} • Status: <strong>${order.status}</strong></div>
+            <div class="admin-item__meta">${clienteFone ? `Tel: ${clienteFone} • ` : ""}${formatDateBR(order.criadoEm)} • Status: <strong>${STATUS_LABELS[status] || status}</strong></div>
           </div>
-          <div class="admin-item__controls">${actionButtons}</div>
+          <div class="admin-item__controls">
+            ${statusSelect}
+            ${notifyBtn}
+            ${cancelBtn}
+            ${deleteBtn}
+          </div>
         </div>
       `;
     })
     .join("");
 }
 
-adminOrdersList.addEventListener("click", async (e) => {
+async function changeOrderStatus(orderId, targetStatus) {
   if (isBusy) return;
+  isBusy = true;
 
-  const confirmBtn = e.target.closest("[data-confirm-order]");
-  if (confirmBtn) {
-    const orderId = confirmBtn.dataset.confirmOrder;
-    isBusy = true;
-    confirmBtn.disabled = true;
+  try {
+    const logsToWrite = [];
+    let updatedOrderSnapshot = null;
 
-    try {
-      const appliedLogs = [];
+    await runTransaction(db, async (transaction) => {
+      const orderRef = doc(db, "reservas", orderId);
+      const orderSnap = await transaction.get(orderRef);
+      if (!orderSnap.exists()) throw new Error("Reserva não encontrada.");
 
-      await runTransaction(db, async (transaction) => {
-        const orderRef = doc(db, "reservas", orderId);
-        const orderSnap = await transaction.get(orderRef);
-        if (!orderSnap.exists()) throw new Error("Reserva não encontrada.");
+      const orderData = orderSnap.data();
+      const prevStatus = orderData.status || "pendente";
+      if (prevStatus === targetStatus) return;
 
-        const orderData = orderSnap.data();
-        if (orderData.status !== "pendente") return;
+      const wasDeducted = STOCK_DEDUCTED_STATUSES.includes(prevStatus);
+      const willBeDeducted = STOCK_DEDUCTED_STATUSES.includes(targetStatus);
+      const items = Array.isArray(orderData.itens) ? orderData.itens : [];
 
-        const items = Array.isArray(orderData.itens) ? orderData.itens : [];
+      if (!wasDeducted && willBeDeducted) {
+        // Baixar estoque
         const productSnaps = [];
         for (const item of items) {
           const prodRef = doc(db, "produtos", item.id);
           const prodSnap = await transaction.get(prodRef);
-          if (!prodSnap.exists()) {
-            throw new Error(`Produto "${item.name}" não existe mais.`);
-          }
+          if (!prodSnap.exists()) throw new Error(`Produto "${item.name}" não existe mais.`);
           productSnaps.push({ item, prodRef, prodSnap });
         }
 
@@ -609,29 +727,87 @@ adminOrdersList.addEventListener("click", async (e) => {
           const nextTotal = Object.values(sizes).reduce((s, q) => s + q, 0);
           updates.push({ ref: prodRef, sizes, nextTotal });
 
-          appliedLogs.push({
+          logsToWrite.push({
             produtoNome: item.name,
             tamanho: sizeKey,
             delta: -qtyNeeded,
             saldoFinal: sizes[sizeKey],
-            motivo: `Reserva #${orderId.slice(0, 6)} confirmada`
+            motivo: `Reserva #${orderId.slice(0, 6)} (${STATUS_LABELS[targetStatus] || targetStatus})`
           });
         }
 
         for (const u of updates) {
           transaction.update(u.ref, { tamanhos: u.sizes, estoque: u.nextTotal });
         }
-        transaction.update(orderRef, { status: "confirmado" });
-      });
+      } else if (wasDeducted && !willBeDeducted) {
+        // Estornar estoque (cancelado ou voltou para pendente)
+        const foundProds = [];
+        for (const item of items) {
+          const prodRef = doc(db, "produtos", item.id);
+          const prodSnap = await transaction.get(prodRef);
+          if (prodSnap.exists()) foundProds.push({ item, prodRef, prodSnap });
+        }
 
-      for (const lg of appliedLogs) {
-        await logStockMovement(lg);
+        const updates = [];
+        for (const { item, prodRef, prodSnap } of foundProds) {
+          const pData = prodSnap.data();
+          const sizes = normalizeSizes(pData.tamanhos, pData.estoque);
+          const sizeKey = item.size || "Único";
+          const qtyRefund = Math.max(0, Number(item.qty || 0));
+
+          sizes[sizeKey] = Number(sizes[sizeKey] || 0) + qtyRefund;
+          const nextTotal = Object.values(sizes).reduce((s, q) => s + q, 0);
+          updates.push({ ref: prodRef, sizes, nextTotal });
+
+          logsToWrite.push({
+            produtoNome: item.name,
+            tamanho: sizeKey,
+            delta: qtyRefund,
+            saldoFinal: sizes[sizeKey],
+            motivo: `Estorno Reserva #${orderId.slice(0, 6)} (${STATUS_LABELS[targetStatus] || targetStatus})`
+          });
+        }
+
+        for (const u of updates) {
+          transaction.update(u.ref, { tamanhos: u.sizes, estoque: u.nextTotal });
+        }
       }
-    } catch (err) {
-      showNotice(err.message || "Não foi possível confirmar a reserva.");
-    } finally {
-      isBusy = false;
-      confirmBtn.disabled = false;
+
+      transaction.update(orderRef, { status: targetStatus });
+      updatedOrderSnapshot = { id: orderId, ...orderData, status: targetStatus };
+    });
+
+    for (const lg of logsToWrite) {
+      await logStockMovement(lg);
+    }
+
+    if (targetStatus === "saiu_entrega" && updatedOrderSnapshot) {
+      const waUrl = buildDeliveryWhatsAppUrl(updatedOrderSnapshot);
+      if (waUrl && window.confirm("Pedido marcado como 'Saiu para Entrega'. Abrir WhatsApp para avisar o cliente agora?")) {
+        window.open(waUrl, "_blank", "noopener,noreferrer");
+      }
+    }
+  } catch (err) {
+    showNotice(err.message || "Não foi possível atualizar a situação da reserva.");
+    renderOrders(currentOrders);
+  } finally {
+    isBusy = false;
+  }
+}
+
+adminOrdersList.addEventListener("change", (e) => {
+  const select = e.target.closest("[data-status-select]");
+  if (!select) return;
+  changeOrderStatus(select.dataset.statusSelect, select.value);
+});
+
+adminOrdersList.addEventListener("click", async (e) => {
+  const notifyLink = e.target.closest("[data-notify-delivery]");
+  if (notifyLink) {
+    const orderId = notifyLink.dataset.notifyDelivery;
+    const order = currentOrders.find((o) => o.id === orderId);
+    if (order && order.status !== "saiu_entrega") {
+      changeOrderStatus(orderId, "saiu_entrega");
     }
     return;
   }
@@ -639,72 +815,38 @@ adminOrdersList.addEventListener("click", async (e) => {
   const cancelBtn = e.target.closest("[data-cancel-order]");
   if (cancelBtn) {
     const orderId = cancelBtn.dataset.cancelOrder;
-    isBusy = true;
-    cancelBtn.disabled = true;
+    if (window.confirm("Cancelar esta reserva? Se já foi confirmada, o estoque será estornado.")) {
+      changeOrderStatus(orderId, "cancelado");
+    }
+    return;
+  }
 
-    try {
-      const refundLogs = [];
+  const deleteBtn = e.target.closest("[data-delete-order]");
+  if (deleteBtn && !isBusy) {
+    const orderId = deleteBtn.dataset.deleteOrder;
+    const order = currentOrders.find((o) => o.id === orderId);
+    if (!order) return;
 
-      await runTransaction(db, async (transaction) => {
-        const orderRef = doc(db, "reservas", orderId);
-        const orderSnap = await transaction.get(orderRef);
-        if (!orderSnap.exists()) throw new Error("Reserva não encontrada.");
+    if (STOCK_DEDUCTED_STATUSES.includes(order.status)) {
+      showNotice("Cancele a reserva primeiro antes de excluir para que o estoque seja estornado.");
+      return;
+    }
 
-        const orderData = orderSnap.data();
-        if (orderData.status === "cancelado") return;
-
-        if (orderData.status === "confirmado") {
-          const items = Array.isArray(orderData.itens) ? orderData.itens : [];
-          const foundProds = [];
-
-          for (const item of items) {
-            const prodRef = doc(db, "produtos", item.id);
-            const prodSnap = await transaction.get(prodRef);
-            if (prodSnap.exists()) {
-              foundProds.push({ item, prodRef, prodSnap });
-            }
-          }
-
-          const updates = [];
-          for (const { item, prodRef, prodSnap } of foundProds) {
-            const pData = prodSnap.data();
-            const sizes = normalizeSizes(pData.tamanhos, pData.estoque);
-            const sizeKey = item.size || "Único";
-            const qtyRefund = Math.max(0, Number(item.qty || 0));
-
-            sizes[sizeKey] = Number(sizes[sizeKey] || 0) + qtyRefund;
-            const nextTotal = Object.values(sizes).reduce((s, q) => s + q, 0);
-
-            updates.push({ ref: prodRef, sizes, nextTotal });
-            refundLogs.push({
-              produtoNome: item.name,
-              tamanho: sizeKey,
-              delta: qtyRefund,
-              saldoFinal: sizes[sizeKey],
-              motivo: `Estorno Reserva #${orderId.slice(0, 6)}`
-            });
-          }
-
-          for (const u of updates) {
-            transaction.update(u.ref, { tamanhos: u.sizes, estoque: u.nextTotal });
-          }
-        }
-
-        transaction.update(orderRef, { status: "cancelado" });
-      });
-
-      for (const lg of refundLogs) {
-        await logStockMovement(lg);
+    if (window.confirm(`Excluir permanentemente o registro da Reserva #${orderId.slice(0, 6)}?`)) {
+      isBusy = true;
+      try {
+        await deleteDoc(doc(db, "reservas", orderId));
+      } catch (err) {
+        console.error("Erro ao excluir reserva:", err);
+        showNotice("Não foi possível excluir o registro.");
+      } finally {
+        isBusy = false;
       }
-    } catch (err) {
-      showNotice(err.message || "Não foi possível cancelar a reserva.");
-    } finally {
-      isBusy = false;
-      cancelBtn.disabled = false;
     }
   }
 });
 
+/* ABA 4: HISTÓRICO */
 function renderHistory(logs) {
   if (!adminHistoryList) return;
 
